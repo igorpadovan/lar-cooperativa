@@ -2,9 +2,19 @@
 *.code-workspace
 .vscode/
 
+# .NET
+bin/
+obj/
+*.user
+TestResults/
+artifacts/
+
 # SO
 .DS_Store
 Thumbs.db
+
+# Ambiente
+.env
 
 # Logs e temporários
 *.log

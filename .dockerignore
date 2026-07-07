@@ -1,0 +1,9 @@
+.git/
+.vscode/
+**/bin/
+**/obj/
+**/TestResults/
+*.code-workspace
+Dockerfile
+compose.yaml
+README.md
