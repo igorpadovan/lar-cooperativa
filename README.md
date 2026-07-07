@@ -52,6 +52,7 @@ docker compose down --volumes  # apaga também os volumes (banco e cache de paco
 | Serviço          | Endereço (com as portas padrão)                                       |
 | ---------------- | --------------------------------------------------------------------- |
 | API              | http://localhost:8081                                                  |
+| Swagger UI       | http://localhost:8081/swagger — para testar os endpoints manualmente   |
 | OpenAPI (spec)   | http://localhost:8081/openapi/v1.json                                  |
 | PostgreSQL (dev) | `localhost:5433` — banco, usuário e senha conforme o `.env`            |
 

@@ -17,6 +17,7 @@
     <!-- Pina a versão corrigida da dependência transitiva (NU1903 / GHSA-v5pm-xwqc-g5wc) -->
     <PackageReference Include="Microsoft.OpenApi" Version="2.10.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
   </ItemGroup>
 
 </Project>

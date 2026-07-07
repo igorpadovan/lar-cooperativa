@@ -28,6 +28,12 @@ await using (var scope = app.Services.CreateAsyncScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    // UI apenas para facilitar testes manuais dos endpoints em desenvolvimento
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "LarCooperativa API v1");
+    });
 }
 
 app.UseExceptionHandler();
