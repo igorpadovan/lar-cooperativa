@@ -4,7 +4,8 @@ WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:8080 \
     DOTNET_USE_POLLING_FILE_WATCHER=1
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "watch", "run", "--project", "src/LarCooperativa.Api", "--no-launch-profile"]
+# --non-interactive: reinicia sozinho em edições que o hot reload não cobre (ex.: excluir classes)
+ENTRYPOINT ["dotnet", "watch", "run", "--project", "src/LarCooperativa.Api", "--no-launch-profile", "--non-interactive"]
 
 # ===== Build/publish =====
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
