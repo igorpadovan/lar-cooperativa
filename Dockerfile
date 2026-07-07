@@ -10,7 +10,7 @@ ENTRYPOINT ["dotnet", "watch", "run", "--project", "src/LarCooperativa.Api", "--
 # ===== Build/publish =====
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY LarCooperativa.sln ./
+COPY LarCooperativa.slnx ./
 COPY src/LarCooperativa.Api/LarCooperativa.Api.csproj src/LarCooperativa.Api/
 RUN dotnet restore src/LarCooperativa.Api
 COPY . .

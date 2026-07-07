@@ -1,5 +1,48 @@
 @LarCooperativa.Api_HostAddress = http://localhost:8081
 
+# Listar pessoas
+GET {{LarCooperativa.Api_HostAddress}}/api/pessoas
+Accept: application/json
+
+###
+
+# Buscar pessoa por id
+GET {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+Accept: application/json
+
+###
+
+# Criar pessoa (CPF aceito com ou sem máscara)
+POST {{LarCooperativa.Api_HostAddress}}/api/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Maria da Silva",
+  "cpf": "529.982.247-25",
+  "dataNascimento": "1990-05-20"
+}
+
+###
+
+# Atualizar pessoa
+PUT {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+Content-Type: application/json
+
+{
+  "nome": "Maria da Silva Santos",
+  "cpf": "52998224725",
+  "dataNascimento": "1990-05-20",
+  "estaAtivo": false
+}
+
+###
+
+# Remover pessoa
+DELETE {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+
+###
+
+# Especificação OpenAPI
 GET {{LarCooperativa.Api_HostAddress}}/openapi/v1.json
 Accept: application/json
 

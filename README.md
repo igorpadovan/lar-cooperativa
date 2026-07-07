@@ -81,12 +81,37 @@ docker run --rm -it -v "$PWD:/app" -w /app -v lar-cooperativa_nuget-cache:/root/
 
 > No Windows (PowerShell), substitua `"$PWD:/app"` por `"${PWD}:/app"`.
 
+## API
+
+Endpoints de Pessoa (exemplos prontos em [LarCooperativa.Api.http](src/LarCooperativa.Api/LarCooperativa.Api.http)):
+
+| Método   | Rota                | Respostas                          |
+| -------- | ------------------- | ---------------------------------- |
+| `GET`    | `/api/pessoas`      | `200`                              |
+| `GET`    | `/api/pessoas/{id}` | `200` · `404`                      |
+| `POST`   | `/api/pessoas`      | `201` · `400` · `409` (CPF em uso) |
+| `PUT`    | `/api/pessoas/{id}` | `200` · `400` · `404` · `409`      |
+| `DELETE` | `/api/pessoas/{id}` | `204` · `404`                      |
+
+Regras de negócio: CPF validado (dígitos verificadores) e único, aceito com ou sem máscara e armazenado normalizado; data de nascimento não pode estar no futuro; pessoa é criada ativa. Erros seguem o formato Problem Details (RFC 9457).
+
+As migrations do EF Core são aplicadas automaticamente na inicialização da aplicação.
+
 ## Estrutura
 
 ```
-├── .env.example                # modelo de configuração (usuário, senha e portas)
-├── compose.yaml                # PostgreSQL 18 + API (dev) + runner de testes
-├── Dockerfile                  # multi-stage: dev (watch) / build / runtime
-├── docker/postgres/init/       # scripts de inicialização do banco
-└── src/LarCooperativa.Api/     # WebAPI
+├── .env.example                    # modelo de configuração (usuário, senha e portas)
+├── compose.yaml                    # PostgreSQL 18 + API (dev) + runner de testes
+├── Dockerfile                      # multi-stage: dev (watch) / build / runtime
+├── docker/postgres/init/           # scripts de inicialização do banco
+├── src/LarCooperativa.Api/
+│   ├── Controllers/                # camada HTTP (rotas, status codes)
+│   ├── Services/                   # regras de negócio
+│   ├── Domain/                     # entidades, value objects e contratos de repositório
+│   ├── Data/                       # EF Core: DbContext, configurações, repositórios, migrations
+│   ├── Contracts/                  # DTOs de request/response
+│   └── Common/                     # Result/Error compartilhados
+└── tests/
+    ├── LarCooperativa.UnitTests/         # regras de negócio (xUnit + NSubstitute)
+    └── LarCooperativa.IntegrationTests/  # endpoints ponta a ponta (WebApplicationFactory)
 ```

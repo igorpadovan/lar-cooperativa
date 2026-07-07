@@ -2,4 +2,8 @@
   <Folder Name="/src/">
     <Project Path="src/LarCooperativa.Api/LarCooperativa.Api.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LarCooperativa.IntegrationTests/LarCooperativa.IntegrationTests.csproj" />
+    <Project Path="tests/LarCooperativa.UnitTests/LarCooperativa.UnitTests.csproj" />
+  </Folder>
 </Solution>
