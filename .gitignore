@@ -1,0 +1,11 @@
+# VSCode
+*.code-workspace
+.vscode/
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Logs e temporários
+*.log
+*.tmp
