@@ -5,6 +5,7 @@ using LarCooperativa.Api.Auth;
 using LarCooperativa.Api.Data;
 using LarCooperativa.Api.Data.Repositories;
 using LarCooperativa.Api.Domain;
+using LarCooperativa.Api.RateLimiting;
 using LarCooperativa.Api.Services;
 using LarCooperativa.Api.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +41,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Seguro por padrão: todo endpoint exige usuário autenticado, exceto os marcados com [AllowAnonymous]
 builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+
+builder.Services.AddApiRateLimiting(builder.Configuration);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
@@ -96,6 +99,8 @@ app.UseStatusCodePages();
 
 app.UseAuthentication();
 app.UseAuthorization();
+// Após a autenticação, para particionar o limite pelo usuário do token
+app.UseRateLimiter();
 
 app.MapControllers();
 

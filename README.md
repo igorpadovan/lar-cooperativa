@@ -128,6 +128,10 @@ A resposta traz `accessToken` (válido por 60 minutos); envie-o nas demais requi
 | ------ | ----------------- | ------------------------------------- |
 | `POST` | `/api/auth/login` | `200` · `401` (credenciais inválidas) |
 
+## Rate limiting
+
+Todos os endpoints são protegidos por um limite global (**sliding window**, padrão 100 requisições/minuto), particionado pelo usuário autenticado (fallback: IP) — endpoints novos já nascem limitados, sem configuração por controller. O login tem uma política adicional mais restrita (**fixed window por IP**, padrão 10/minuto) para mitigar força bruta. Ao exceder, a API responde `429 Too Many Requests` com o header `Retry-After`. Os limites são configuráveis pela seção `RateLimiting` do `appsettings.json` (ou variáveis `RateLimiting__*`).
+
 ## API
 
 Endpoints de Pessoa (exemplos prontos em [LarCooperativa.Api.http](src/LarCooperativa.Api/LarCooperativa.Api.http)):

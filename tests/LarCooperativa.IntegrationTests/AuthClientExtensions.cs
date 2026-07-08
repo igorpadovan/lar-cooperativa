@@ -10,7 +10,7 @@ internal static class AuthClientExtensions
     public const string AdminUsuario = "admin";
     public const string AdminSenha = "admin123";
 
-    public static async Task<HttpClient> CreateAuthenticatedClientAsync(this ApiFactory factory)
+    public static async Task<HttpClient> CreateAuthenticatedClientAsync(this WebApplicationFactory<Program> factory)
     {
         var client = factory.CreateClient();
         var token = await client.LoginAsync(AdminUsuario, AdminSenha);

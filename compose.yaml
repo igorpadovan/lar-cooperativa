@@ -50,6 +50,10 @@ services:
       # Credenciais fixas para os testes serem determinísticos, independentes do .env
       Auth__AdminUsuario: admin
       Auth__AdminSenha: admin123
+      # Limites altos: a suíte compartilha uma instância da API; o throttling é testado
+      # em fábrica própria com limites baixos (RateLimitingTests)
+      RateLimiting__Api__PermitLimit: "100000"
+      RateLimiting__Login__PermitLimit: "100000"
     volumes:
       - .:/app
       - nuget-cache:/root/.nuget/packages
