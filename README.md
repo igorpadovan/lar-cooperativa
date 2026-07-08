@@ -25,6 +25,9 @@ Copy-Item .env.example .env # Windows (PowerShell)
 | `POSTGRES_DB`        | `lar_cooperativa` | Nome do banco de desenvolvimento |
 | `POSTGRES_HOST_PORT` | `5433`            | Porta do PostgreSQL no host      |
 | `API_HOST_PORT`      | `8081`            | Porta da API no host             |
+| `JWT_KEY`            | chave de dev      | Chave de assinatura dos tokens (mín. 32 caracteres) |
+| `ADMIN_USUARIO`      | `admin`           | Usuário administrador semeado na primeira execução |
+| `ADMIN_SENHA`        | `admin123`        | Senha do usuário administrador   |
 
 > O `compose.yaml` tem esses mesmos valores como fallback, então o ambiente também sobe sem o `.env` — o arquivo só é necessário para customizar.
 
@@ -108,6 +111,22 @@ docker run --rm -it -v "$PWD:/app" -w /app -v lar-cooperativa_nuget-cache:/root/
 ```
 
 > No Windows (PowerShell), substitua `"$PWD:/app"` por `"${PWD}:/app"`.
+
+## Autenticação
+
+A API usa **JWT Bearer**. Todos os endpoints exigem token (política fallback, seguro por padrão), exceto o login. Um usuário administrador é criado na primeira execução com as credenciais das variáveis de ambiente `ADMIN_USUARIO` e `ADMIN_SENHA` do `.env` — não há credencial embutida no código; sem essas variáveis a aplicação não inicia. O seed só acontece com a tabela de usuários vazia: para trocar as credenciais depois, recrie o volume do banco (`docker compose down --volumes`).
+
+```bash
+curl -X POST http://localhost:8081/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"usuario":"admin","senha":"admin123"}'
+```
+
+A resposta traz `accessToken` (válido por 60 minutos); envie-o nas demais requisições como `Authorization: Bearer <token>`. No Swagger UI, use o botão **Authorize** com o token obtido no próprio endpoint de login.
+
+| Método | Rota              | Respostas                             |
+| ------ | ----------------- | ------------------------------------- |
+| `POST` | `/api/auth/login` | `200` · `401` (credenciais inválidas) |
 
 ## API
 

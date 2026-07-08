@@ -6,9 +6,13 @@ using LarCooperativa.Api.Domain;
 namespace LarCooperativa.IntegrationTests;
 
 [Collection(ApiCollection.Name)]
-public class TelefonesEndpointsTests(ApiFactory factory)
+public class TelefonesEndpointsTests(ApiFactory factory) : IAsyncLifetime
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private HttpClient _client = null!;
+
+    public async Task InitializeAsync() => _client = await factory.CreateAuthenticatedClientAsync();
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     private static CreateTelefoneRequest RequestValido() => new()
     {

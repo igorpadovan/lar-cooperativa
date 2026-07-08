@@ -1,19 +1,36 @@
 @LarCooperativa.Api_HostAddress = http://localhost:8081
 
+# Preencha com o accessToken retornado pelo login
+@token =
+
+# Login (usa as credenciais do .env; padrão admin/admin123)
+POST {{LarCooperativa.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usuario": "admin",
+  "senha": "admin123"
+}
+
+###
+
 # Listar pessoas
 GET {{LarCooperativa.Api_HostAddress}}/api/pessoas
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # Buscar pessoa por id
 GET {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # Criar pessoa (CPF aceito com ou sem máscara)
 POST {{LarCooperativa.Api_HostAddress}}/api/pessoas
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -26,6 +43,7 @@ Content-Type: application/json
 
 # Atualizar pessoa
 PUT {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -39,17 +57,20 @@ Content-Type: application/json
 
 # Remover pessoa (remove também os telefones, em cascata)
 DELETE {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+Authorization: Bearer {{token}}
 
 ###
 
 # Listar telefones da pessoa
 GET {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # Criar telefone (tipo: Celular, Residencial ou Comercial; número aceito com máscara)
 POST {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -61,6 +82,7 @@ Content-Type: application/json
 
 # Atualizar telefone
 PUT {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones/{{telefoneId}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -72,6 +94,7 @@ Content-Type: application/json
 
 # Remover telefone
 DELETE {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones/{{telefoneId}}
+Authorization: Bearer {{token}}
 
 ###
 

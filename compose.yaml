@@ -28,6 +28,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-lar_cooperativa};Username=${POSTGRES_USER:-lar};Password=${POSTGRES_PASSWORD:-lar}"
+      Jwt__Key: ${JWT_KEY:-chave-de-desenvolvimento-nao-usar-em-producao-0123456789}
+      Auth__AdminUsuario: ${ADMIN_USUARIO:-admin}
+      Auth__AdminSenha: ${ADMIN_SENHA:-admin123}
     volumes:
       - .:/app
       - nuget-cache:/root/.nuget/packages
@@ -43,6 +46,10 @@ services:
     command: dotnet test
     environment:
       ConnectionStrings__Default: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-lar_cooperativa}_test;Username=${POSTGRES_USER:-lar};Password=${POSTGRES_PASSWORD:-lar}"
+      Jwt__Key: ${JWT_KEY:-chave-de-desenvolvimento-nao-usar-em-producao-0123456789}
+      # Credenciais fixas para os testes serem determinísticos, independentes do .env
+      Auth__AdminUsuario: admin
+      Auth__AdminSenha: admin123
     volumes:
       - .:/app
       - nuget-cache:/root/.nuget/packages

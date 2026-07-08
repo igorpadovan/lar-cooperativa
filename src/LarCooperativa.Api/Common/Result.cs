@@ -5,6 +5,7 @@ public enum ErrorType
     Validation,
     NotFound,
     Conflict,
+    Unauthorized,
 }
 
 public sealed record Error(ErrorType Type, string Code, string Message);

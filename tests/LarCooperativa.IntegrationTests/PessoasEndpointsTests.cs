@@ -5,9 +5,13 @@ using LarCooperativa.Api.Contracts;
 namespace LarCooperativa.IntegrationTests;
 
 [Collection(ApiCollection.Name)]
-public class PessoasEndpointsTests(ApiFactory factory)
+public class PessoasEndpointsTests(ApiFactory factory) : IAsyncLifetime
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private HttpClient _client = null!;
+
+    public async Task InitializeAsync() => _client = await factory.CreateAuthenticatedClientAsync();
+
+    public Task DisposeAsync() => Task.CompletedTask;
 
     private static CreatePessoaRequest RequestValido(string? cpf = null) => new()
     {
