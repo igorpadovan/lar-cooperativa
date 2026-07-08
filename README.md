@@ -60,11 +60,38 @@ A API roda com `dotnet watch` e o código-fonte é montado por volume: qualquer 
 
 ## Testes
 
-O script de inicialização do PostgreSQL cria um banco separado para testes de integração, com o sufixo `_test` (padrão: `lar_cooperativa_test`). A suíte roda em container:
+A suíte tem dois projetos:
+
+- **`tests/LarCooperativa.UnitTests`** — testes de unidade (regras de negócio e validators, com dependências dubladas); não usam banco.
+- **`tests/LarCooperativa.IntegrationTests`** — testes de integração (endpoints de ponta a ponta com `WebApplicationFactory`); usam um banco separado com o sufixo `_test` (padrão: `lar_cooperativa_test`), criado pelo script de inicialização do PostgreSQL.
+
+Tudo roda em container, sem SDK na máquina.
+
+Suíte completa (unidade + integração):
 
 ```bash
 docker compose --profile test run --rm tests
 ```
+
+Apenas os testes de unidade (não precisa do banco no ar):
+
+```bash
+docker compose --profile test run --rm tests dotnet test tests/LarCooperativa.UnitTests
+```
+
+Apenas os testes de integração:
+
+```bash
+docker compose --profile test run --rm tests dotnet test tests/LarCooperativa.IntegrationTests
+```
+
+Filtrar testes específicos (qualquer projeto), por nome de classe ou método:
+
+```bash
+docker compose --profile test run --rm tests dotnet test --filter PessoaServiceTests
+```
+
+> Dica: se a API estiver rodando (`docker compose up`), pare-a antes de rodar os testes (`docker compose stop api`) — o build da suíte compartilha os mesmos diretórios `bin/`/`obj/` do volume e pode conflitar com o `dotnet watch`.
 
 ## Outros comandos úteis
 
