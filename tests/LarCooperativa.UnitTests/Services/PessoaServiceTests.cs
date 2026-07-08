@@ -1,21 +1,18 @@
 using LarCooperativa.Api.Contracts;
 using LarCooperativa.Api.Domain;
 using LarCooperativa.Api.Services;
-using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 
 namespace LarCooperativa.UnitTests.Services;
 
 public class PessoaServiceTests
 {
-    private static readonly DateTimeOffset Agora = new(2026, 7, 7, 12, 0, 0, TimeSpan.Zero);
-
     private readonly IPessoaRepository _repository = Substitute.For<IPessoaRepository>();
     private readonly PessoaService _service;
 
     public PessoaServiceTests()
     {
-        _service = new PessoaService(_repository, new FakeTimeProvider(Agora));
+        _service = new PessoaService(_repository);
     }
 
     private static CreatePessoaRequest CreateRequestValido() => new()
@@ -72,27 +69,6 @@ public class PessoaServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(PessoaErrors.CpfDuplicado, result.Error);
         await _repository.DidNotReceive().AddAsync(Arg.Any<Pessoa>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task CreateAsync_ComDataNascimentoFutura_RetornaErroDeValidacao()
-    {
-        var request = CreateRequestValido() with { DataNascimento = new DateOnly(2026, 7, 8) };
-
-        var result = await _service.CreateAsync(request, CancellationToken.None);
-
-        Assert.False(result.IsSuccess);
-        Assert.Equal(PessoaErrors.DataNascimentoFutura, result.Error);
-    }
-
-    [Fact]
-    public async Task CreateAsync_ComDataNascimentoHoje_RetornaSucesso()
-    {
-        var request = CreateRequestValido() with { DataNascimento = new DateOnly(2026, 7, 7) };
-
-        var result = await _service.CreateAsync(request, CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
     }
 
     [Fact]

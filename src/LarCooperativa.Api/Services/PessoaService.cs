@@ -4,7 +4,7 @@ using LarCooperativa.Api.Domain;
 
 namespace LarCooperativa.Api.Services;
 
-public sealed class PessoaService(IPessoaRepository repository, TimeProvider timeProvider) : IPessoaService
+public sealed class PessoaService(IPessoaRepository repository) : IPessoaService
 {
     public Task<IReadOnlyList<Pessoa>> GetAllAsync(CancellationToken cancellationToken) =>
         repository.GetAllAsync(cancellationToken);
@@ -18,11 +18,6 @@ public sealed class PessoaService(IPessoaRepository repository, TimeProvider tim
         if (cpf is null)
         {
             return Result<Pessoa>.Failure(PessoaErrors.CpfInvalido);
-        }
-
-        if (EstaNoFuturo(request.DataNascimento))
-        {
-            return Result<Pessoa>.Failure(PessoaErrors.DataNascimentoFutura);
         }
 
         if (await repository.ExistsByCpfAsync(cpf, excludeId: null, cancellationToken))
@@ -50,11 +45,6 @@ public sealed class PessoaService(IPessoaRepository repository, TimeProvider tim
             return Result<Pessoa>.Failure(PessoaErrors.CpfInvalido);
         }
 
-        if (EstaNoFuturo(request.DataNascimento))
-        {
-            return Result<Pessoa>.Failure(PessoaErrors.DataNascimentoFutura);
-        }
-
         if (await repository.ExistsByCpfAsync(cpf, excludeId: id, cancellationToken))
         {
             return Result<Pessoa>.Failure(PessoaErrors.CpfDuplicado);
@@ -78,7 +68,4 @@ public sealed class PessoaService(IPessoaRepository repository, TimeProvider tim
 
         return Result.Success();
     }
-
-    private bool EstaNoFuturo(DateOnly data) =>
-        data > DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
 }

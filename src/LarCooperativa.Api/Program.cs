@@ -1,16 +1,19 @@
 using System.Text.Json.Serialization;
+using FluentValidation;
 using LarCooperativa.Api.Data;
 using LarCooperativa.Api.Data.Repositories;
 using LarCooperativa.Api.Domain;
 using LarCooperativa.Api.Services;
+using LarCooperativa.Api.Validation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(
             new JsonStringEnumConverter(allowIntegerValues: false)));
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 

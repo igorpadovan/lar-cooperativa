@@ -109,7 +109,7 @@ Regras de negócio:
 - **Pessoa**: CPF validado (dígitos verificadores) e único, aceito com ou sem máscara e armazenado normalizado; data de nascimento não pode estar no futuro; pessoa é criada ativa.
 - **Telefone**: tipo `Celular`, `Residencial` ou `Comercial`; número aceito com máscara e armazenado só com dígitos (DDD + número: 11 dígitos para celular, 10 para os demais); uma pessoa não pode ter o mesmo número repetido.
 
-Erros seguem o formato Problem Details (RFC 9457).
+A validação de entrada usa **FluentValidation** (validators executados por um action filter, na borda HTTP); as regras que dependem do banco (unicidade de CPF/número, registro não encontrado) ficam nos services. Erros seguem o formato Problem Details (RFC 9457) — validações inválidas retornam `400` com os erros por campo.
 
 As migrations do EF Core são aplicadas automaticamente na inicialização da aplicação.
 

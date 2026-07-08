@@ -35,7 +35,7 @@ public sealed class TelefoneService(
             return Result<Telefone>.Failure(PessoaErrors.NaoEncontrada);
         }
 
-        var numero = NormalizarNumero(request.Numero, request.Tipo);
+        var numero = NumeroTelefone.TryNormalizar(request.Numero, request.Tipo);
         if (numero is null)
         {
             return Result<Telefone>.Failure(TelefoneErrors.NumeroInvalido);
@@ -61,7 +61,7 @@ public sealed class TelefoneService(
             return Result<Telefone>.Failure(TelefoneErrors.NaoEncontrado);
         }
 
-        var numero = NormalizarNumero(request.Numero, request.Tipo);
+        var numero = NumeroTelefone.TryNormalizar(request.Numero, request.Tipo);
         if (numero is null)
         {
             return Result<Telefone>.Failure(TelefoneErrors.NumeroInvalido);
@@ -93,22 +93,4 @@ public sealed class TelefoneService(
 
     private async Task<bool> PessoaExisteAsync(Guid pessoaId, CancellationToken cancellationToken) =>
         await pessoaRepository.GetByIdAsync(pessoaId, cancellationToken) is not null;
-
-    /// <summary>
-    /// Aceita máscara comum (espaços, parênteses e hífen) e retorna somente os dígitos,
-    /// ou null quando o número não é válido para o tipo.
-    /// </summary>
-    private static string? NormalizarNumero(string? valor, TipoTelefone tipo)
-    {
-        if (string.IsNullOrWhiteSpace(valor)
-            || !valor.All(c => char.IsAsciiDigit(c) || c is ' ' or '(' or ')' or '-'))
-        {
-            return null;
-        }
-
-        var digitos = new string(valor.Where(char.IsAsciiDigit).ToArray());
-        var tamanhoEsperado = tipo == TipoTelefone.Celular ? 11 : 10;
-
-        return digitos.Length == tamanhoEsperado ? digitos : null;
-    }
 }

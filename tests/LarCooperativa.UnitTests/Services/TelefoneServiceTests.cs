@@ -55,60 +55,17 @@ public class TelefoneServiceTests
         await _telefoneRepository.DidNotReceive().AddAsync(Arg.Any<Telefone>(), Arg.Any<CancellationToken>());
     }
 
-    [Theory]
-    [InlineData("11abcd5678")]      // caracteres inválidos
-    [InlineData("+55 11 91234-5678")] // código de país não suportado
-    [InlineData("")]
-    [InlineData("   ")]
-    public async Task CreateAsync_ComNumeroInvalido_RetornaNumeroInvalido(string numero)
-    {
-        DadoQuePessoaExiste();
-        var request = CreateRequestValido() with { Numero = numero };
-
-        var result = await _service.CreateAsync(_pessoa.Id, request, CancellationToken.None);
-
-        Assert.False(result.IsSuccess);
-        Assert.Equal(TelefoneErrors.NumeroInvalido, result.Error);
-    }
-
     [Fact]
-    public async Task CreateAsync_CelularSemOnzeDigitos_RetornaNumeroInvalido()
+    public async Task CreateAsync_ComNumeroInvalido_RetornaNumeroInvalidoSemPersistir()
     {
         DadoQuePessoaExiste();
-        var request = CreateRequestValido() with { Numero = "(11) 1234-5678" };
+        var request = CreateRequestValido() with { Numero = "(11) 1234-5678" }; // 10 dígitos para celular
 
         var result = await _service.CreateAsync(_pessoa.Id, request, CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(TelefoneErrors.NumeroInvalido, result.Error);
-    }
-
-    [Theory]
-    [InlineData(TipoTelefone.Residencial)]
-    [InlineData(TipoTelefone.Comercial)]
-    public async Task CreateAsync_FixoComOnzeDigitos_RetornaNumeroInvalido(TipoTelefone tipo)
-    {
-        DadoQuePessoaExiste();
-        var request = new CreateTelefoneRequest { Tipo = tipo, Numero = "11912345678" };
-
-        var result = await _service.CreateAsync(_pessoa.Id, request, CancellationToken.None);
-
-        Assert.False(result.IsSuccess);
-        Assert.Equal(TelefoneErrors.NumeroInvalido, result.Error);
-    }
-
-    [Theory]
-    [InlineData(TipoTelefone.Residencial)]
-    [InlineData(TipoTelefone.Comercial)]
-    public async Task CreateAsync_FixoComDezDigitos_RetornaSucesso(TipoTelefone tipo)
-    {
-        DadoQuePessoaExiste();
-        var request = new CreateTelefoneRequest { Tipo = tipo, Numero = "(11) 3333-4444" };
-
-        var result = await _service.CreateAsync(_pessoa.Id, request, CancellationToken.None);
-
-        Assert.True(result.IsSuccess);
-        Assert.Equal("1133334444", result.Value.Numero);
+        await _telefoneRepository.DidNotReceive().AddAsync(Arg.Any<Telefone>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
