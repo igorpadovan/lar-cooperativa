@@ -76,6 +76,7 @@ await using (var scope = app.Services.CreateAsyncScope())
         var senhaHash = hasher.HashPassword(null!, senha); // o hasher padrão não usa o parâmetro user
         db.Usuarios.Add(new Usuario(nomeUsuario, senhaHash));
         await db.SaveChangesAsync();
+        app.Logger.LogInformation("Usuário administrador {NomeUsuario} criado", nomeUsuario);
     }
 }
 

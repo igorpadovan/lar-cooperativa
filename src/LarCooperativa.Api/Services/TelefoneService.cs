@@ -6,7 +6,8 @@ namespace LarCooperativa.Api.Services;
 
 public sealed class TelefoneService(
     ITelefoneRepository telefoneRepository,
-    IPessoaRepository pessoaRepository) : ITelefoneService
+    IPessoaRepository pessoaRepository,
+    ILogger<TelefoneService> logger) : ITelefoneService
 {
     public async Task<Result<IReadOnlyList<Telefone>>> GetAllAsync(Guid pessoaId, CancellationToken cancellationToken)
     {
@@ -43,11 +44,13 @@ public sealed class TelefoneService(
 
         if (await telefoneRepository.ExistsByNumeroAsync(pessoaId, numero, excludeId: null, cancellationToken))
         {
+            logger.LogWarning("Tentativa de criar telefone duplicado para a pessoa {PessoaId}", pessoaId);
             return Result<Telefone>.Failure(TelefoneErrors.NumeroDuplicado);
         }
 
         var telefone = new Telefone(pessoaId, request.Tipo, numero);
         await telefoneRepository.AddAsync(telefone, cancellationToken);
+        logger.LogInformation("Telefone {TelefoneId} criado para a pessoa {PessoaId}", telefone.Id, pessoaId);
 
         return Result<Telefone>.Success(telefone);
     }
@@ -69,11 +72,15 @@ public sealed class TelefoneService(
 
         if (await telefoneRepository.ExistsByNumeroAsync(pessoaId, numero, excludeId: id, cancellationToken))
         {
+            logger.LogWarning(
+                "Tentativa de atualizar telefone {TelefoneId} com número de outro telefone da pessoa {PessoaId}",
+                id, pessoaId);
             return Result<Telefone>.Failure(TelefoneErrors.NumeroDuplicado);
         }
 
         telefone.Atualizar(request.Tipo, numero);
         await telefoneRepository.UpdateAsync(telefone, cancellationToken);
+        logger.LogInformation("Telefone {TelefoneId} atualizado", telefone.Id);
 
         return Result<Telefone>.Success(telefone);
     }
@@ -87,6 +94,7 @@ public sealed class TelefoneService(
         }
 
         await telefoneRepository.DeleteAsync(telefone, cancellationToken);
+        logger.LogInformation("Telefone {TelefoneId} removido da pessoa {PessoaId}", telefone.Id, pessoaId);
 
         return Result.Success();
     }

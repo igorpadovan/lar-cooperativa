@@ -1,6 +1,7 @@
 using LarCooperativa.Api.Contracts;
 using LarCooperativa.Api.Domain;
 using LarCooperativa.Api.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 
 namespace LarCooperativa.UnitTests.Services;
@@ -12,7 +13,7 @@ public class PessoaServiceTests
 
     public PessoaServiceTests()
     {
-        _service = new PessoaService(_repository);
+        _service = new PessoaService(_repository, NullLogger<PessoaService>.Instance);
     }
 
     private static CreatePessoaRequest CreateRequestValido() => new()

@@ -4,7 +4,7 @@ using LarCooperativa.Api.Domain;
 
 namespace LarCooperativa.Api.Services;
 
-public sealed class PessoaService(IPessoaRepository repository) : IPessoaService
+public sealed class PessoaService(IPessoaRepository repository, ILogger<PessoaService> logger) : IPessoaService
 {
     public Task<IReadOnlyList<Pessoa>> GetAllAsync(CancellationToken cancellationToken) =>
         repository.GetAllAsync(cancellationToken);
@@ -22,11 +22,13 @@ public sealed class PessoaService(IPessoaRepository repository) : IPessoaService
 
         if (await repository.ExistsByCpfAsync(cpf, excludeId: null, cancellationToken))
         {
+            logger.LogWarning("Tentativa de criar pessoa com CPF já cadastrado");
             return Result<Pessoa>.Failure(PessoaErrors.CpfDuplicado);
         }
 
         var pessoa = new Pessoa(request.Nome, cpf, request.DataNascimento);
         await repository.AddAsync(pessoa, cancellationToken);
+        logger.LogInformation("Pessoa {PessoaId} criada", pessoa.Id);
 
         return Result<Pessoa>.Success(pessoa);
     }
@@ -47,11 +49,13 @@ public sealed class PessoaService(IPessoaRepository repository) : IPessoaService
 
         if (await repository.ExistsByCpfAsync(cpf, excludeId: id, cancellationToken))
         {
+            logger.LogWarning("Tentativa de atualizar pessoa {PessoaId} com CPF de outra pessoa", id);
             return Result<Pessoa>.Failure(PessoaErrors.CpfDuplicado);
         }
 
         pessoa.Atualizar(request.Nome, cpf, request.DataNascimento, request.EstaAtivo);
         await repository.UpdateAsync(pessoa, cancellationToken);
+        logger.LogInformation("Pessoa {PessoaId} atualizada", pessoa.Id);
 
         return Result<Pessoa>.Success(pessoa);
     }
@@ -65,6 +69,7 @@ public sealed class PessoaService(IPessoaRepository repository) : IPessoaService
         }
 
         await repository.DeleteAsync(pessoa, cancellationToken);
+        logger.LogInformation("Pessoa {PessoaId} removida", pessoa.Id);
 
         return Result.Success();
     }

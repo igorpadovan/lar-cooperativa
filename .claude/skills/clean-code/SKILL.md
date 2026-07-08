@@ -40,3 +40,4 @@ Antes de finalizar qualquer alteração, pergunte:
 2. Cada método faz uma coisa só?
 3. Há duplicação que valha extrair (regra de 3)?
 4. Um leitor novo entenderia sem comentários?
+5. Os eventos de negócio estão logados conforme a skill [logging](../logging/SKILL.md)?

@@ -1,6 +1,7 @@
 using LarCooperativa.Api.Contracts;
 using LarCooperativa.Api.Domain;
 using LarCooperativa.Api.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 
 namespace LarCooperativa.UnitTests.Services;
@@ -16,7 +17,8 @@ public class TelefoneServiceTests
 
     public TelefoneServiceTests()
     {
-        _service = new TelefoneService(_telefoneRepository, _pessoaRepository);
+        _service = new TelefoneService(
+            _telefoneRepository, _pessoaRepository, NullLogger<TelefoneService>.Instance);
     }
 
     private void DadoQuePessoaExiste() =>

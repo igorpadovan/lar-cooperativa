@@ -3,6 +3,7 @@ using LarCooperativa.Api.Contracts;
 using LarCooperativa.Api.Domain;
 using LarCooperativa.Api.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 
 namespace LarCooperativa.UnitTests.Services;
@@ -18,7 +19,8 @@ public class AuthServiceTests
 
     public AuthServiceTests()
     {
-        _service = new AuthService(_repository, _passwordHasher, _tokenGenerator);
+        _service = new AuthService(
+            _repository, _passwordHasher, _tokenGenerator, NullLogger<AuthService>.Instance);
     }
 
     private static LoginRequest Request(string senha = "admin123") => new()
