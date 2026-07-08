@@ -37,8 +37,41 @@ Content-Type: application/json
 
 ###
 
-# Remover pessoa
+# Remover pessoa (remove também os telefones, em cascata)
 DELETE {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}
+
+###
+
+# Listar telefones da pessoa
+GET {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones
+Accept: application/json
+
+###
+
+# Criar telefone (tipo: Celular, Residencial ou Comercial; número aceito com máscara)
+POST {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones
+Content-Type: application/json
+
+{
+  "tipo": "Celular",
+  "numero": "(11) 91234-5678"
+}
+
+###
+
+# Atualizar telefone
+PUT {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones/{{telefoneId}}
+Content-Type: application/json
+
+{
+  "tipo": "Residencial",
+  "numero": "(11) 3333-4444"
+}
+
+###
+
+# Remover telefone
+DELETE {{LarCooperativa.Api_HostAddress}}/api/pessoas/{{pessoaId}}/telefones/{{telefoneId}}
 
 ###
 

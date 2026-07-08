@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using LarCooperativa.Api.Data;
 using LarCooperativa.Api.Data.Repositories;
 using LarCooperativa.Api.Domain;
@@ -6,7 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(allowIntegerValues: false)));
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
@@ -15,6 +19,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<IPessoaService, PessoaService>();
+builder.Services.AddScoped<ITelefoneRepository, TelefoneRepository>();
+builder.Services.AddScoped<ITelefoneService, TelefoneService>();
 builder.Services.AddSingleton(TimeProvider.System);
 
 var app = builder.Build();

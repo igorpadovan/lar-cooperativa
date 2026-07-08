@@ -1,4 +1,3 @@
-using LarCooperativa.Api.Common;
 using LarCooperativa.Api.Contracts;
 using LarCooperativa.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +35,7 @@ public class PessoasController(IPessoaService service) : ControllerBase
         var result = await service.CreateAsync(request, cancellationToken);
         if (!result.IsSuccess)
         {
-            return FromError(result.Error!);
+            return this.ToProblem(result.Error!);
         }
 
         var response = PessoaResponse.FromDomain(result.Value);
@@ -54,7 +53,7 @@ public class PessoasController(IPessoaService service) : ControllerBase
         var result = await service.UpdateAsync(id, request, cancellationToken);
         return result.IsSuccess
             ? Ok(PessoaResponse.FromDomain(result.Value))
-            : FromError(result.Error!);
+            : this.ToProblem(result.Error!);
     }
 
     [HttpDelete("{id:guid}")]
@@ -63,17 +62,6 @@ public class PessoasController(IPessoaService service) : ControllerBase
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var result = await service.DeleteAsync(id, cancellationToken);
-        return result.IsSuccess ? NoContent() : FromError(result.Error!);
+        return result.IsSuccess ? NoContent() : this.ToProblem(result.Error!);
     }
-
-    private ObjectResult FromError(Error error) => Problem(
-        title: error.Code,
-        detail: error.Message,
-        statusCode: error.Type switch
-        {
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            _ => StatusCodes.Status500InternalServerError,
-        });
 }

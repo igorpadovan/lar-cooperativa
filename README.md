@@ -94,7 +94,22 @@ Endpoints de Pessoa (exemplos prontos em [LarCooperativa.Api.http](src/LarCooper
 | `PUT`    | `/api/pessoas/{id}` | `200` · `400` · `404` · `409`      |
 | `DELETE` | `/api/pessoas/{id}` | `204` · `404`                      |
 
-Regras de negócio: CPF validado (dígitos verificadores) e único, aceito com ou sem máscara e armazenado normalizado; data de nascimento não pode estar no futuro; pessoa é criada ativa. Erros seguem o formato Problem Details (RFC 9457).
+Telefones de uma pessoa (relação 1:N, removidos em cascata com a pessoa):
+
+| Método   | Rota                                     | Respostas                             |
+| -------- | ---------------------------------------- | ------------------------------------- |
+| `GET`    | `/api/pessoas/{pessoaId}/telefones`      | `200` · `404` (pessoa)                |
+| `GET`    | `/api/pessoas/{pessoaId}/telefones/{id}` | `200` · `404`                         |
+| `POST`   | `/api/pessoas/{pessoaId}/telefones`      | `201` · `400` · `404` · `409` (número em uso) |
+| `PUT`    | `/api/pessoas/{pessoaId}/telefones/{id}` | `200` · `400` · `404` · `409`         |
+| `DELETE` | `/api/pessoas/{pessoaId}/telefones/{id}` | `204` · `404`                         |
+
+Regras de negócio:
+
+- **Pessoa**: CPF validado (dígitos verificadores) e único, aceito com ou sem máscara e armazenado normalizado; data de nascimento não pode estar no futuro; pessoa é criada ativa.
+- **Telefone**: tipo `Celular`, `Residencial` ou `Comercial`; número aceito com máscara e armazenado só com dígitos (DDD + número: 11 dígitos para celular, 10 para os demais); uma pessoa não pode ter o mesmo número repetido.
+
+Erros seguem o formato Problem Details (RFC 9457).
 
 As migrations do EF Core são aplicadas automaticamente na inicialização da aplicação.
 
