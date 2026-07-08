@@ -6,8 +6,8 @@ namespace LarCooperativa.Api.Services;
 
 public sealed class PessoaService(IPessoaRepository repository, ILogger<PessoaService> logger) : IPessoaService
 {
-    public Task<IReadOnlyList<Pessoa>> GetAllAsync(CancellationToken cancellationToken) =>
-        repository.GetAllAsync(cancellationToken);
+    public Task<Page<Pessoa>> GetAllAsync(PaginationQuery paginacao, CancellationToken cancellationToken) =>
+        repository.GetPageAsync(paginacao.Pagina, paginacao.TamanhoPagina, cancellationToken);
 
     public Task<Pessoa?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
         repository.GetByIdAsync(id, cancellationToken);

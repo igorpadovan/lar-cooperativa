@@ -6,7 +6,7 @@ namespace LarCooperativa.Api.Services;
 
 public interface IPessoaService
 {
-    Task<IReadOnlyList<Pessoa>> GetAllAsync(CancellationToken cancellationToken);
+    Task<Page<Pessoa>> GetAllAsync(PaginationQuery paginacao, CancellationToken cancellationToken);
 
     Task<Pessoa?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 

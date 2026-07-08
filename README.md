@@ -138,11 +138,13 @@ Endpoints de Pessoa (exemplos prontos em [LarCooperativa.Api.http](src/LarCooper
 
 | Método   | Rota                | Respostas                          |
 | -------- | ------------------- | ---------------------------------- |
-| `GET`    | `/api/pessoas`      | `200`                              |
+| `GET`    | `/api/pessoas`      | `200` · `400` (paginação inválida) |
 | `GET`    | `/api/pessoas/{id}` | `200` · `404`                      |
 | `POST`   | `/api/pessoas`      | `201` · `400` · `409` (CPF em uso) |
 | `PUT`    | `/api/pessoas/{id}` | `200` · `400` · `404` · `409`      |
 | `DELETE` | `/api/pessoas/{id}` | `204` · `404`                      |
+
+A listagem de pessoas é **paginada**: `GET /api/pessoas?pagina=1&tamanhoPagina=20` (padrões; máximo de 100 itens por página). A resposta é um envelope com `itens`, `pagina`, `tamanhoPagina`, `totalItens` e `totalPaginas`, ordenada por nome.
 
 Telefones de uma pessoa (relação 1:N, removidos em cascata com a pessoa):
 

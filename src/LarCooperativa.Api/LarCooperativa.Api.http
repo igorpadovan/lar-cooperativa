@@ -14,8 +14,8 @@ Content-Type: application/json
 
 ###
 
-# Listar pessoas
-GET {{LarCooperativa.Api_HostAddress}}/api/pessoas
+# Listar pessoas (paginado; padrões: pagina=1, tamanhoPagina=20, máx. 100)
+GET {{LarCooperativa.Api_HostAddress}}/api/pessoas?pagina=1&tamanhoPagina=20
 Authorization: Bearer {{token}}
 Accept: application/json
 

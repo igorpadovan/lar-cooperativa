@@ -1,3 +1,4 @@
+using LarCooperativa.Api.Common;
 using LarCooperativa.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,11 +6,19 @@ namespace LarCooperativa.Api.Data.Repositories;
 
 public sealed class PessoaRepository(AppDbContext context) : IPessoaRepository
 {
-    public async Task<IReadOnlyList<Pessoa>> GetAllAsync(CancellationToken cancellationToken) =>
-        await context.Pessoas
+    public async Task<Page<Pessoa>> GetPageAsync(int pagina, int tamanhoPagina, CancellationToken cancellationToken)
+    {
+        var totalItens = await context.Pessoas.CountAsync(cancellationToken);
+        var itens = await context.Pessoas
             .AsNoTracking()
-            .OrderBy(p => p.Nome)
+            // Desempate por Id para a ordenação (e as páginas) serem estáveis
+            .OrderBy(p => p.Nome).ThenBy(p => p.Id)
+            .Skip((pagina - 1) * tamanhoPagina)
+            .Take(tamanhoPagina)
             .ToListAsync(cancellationToken);
+
+        return new Page<Pessoa>(itens, pagina, tamanhoPagina, totalItens);
+    }
 
     public Task<Pessoa?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
         context.Pessoas.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);

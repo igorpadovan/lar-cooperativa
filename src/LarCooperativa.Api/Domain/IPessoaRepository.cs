@@ -1,8 +1,10 @@
+using LarCooperativa.Api.Common;
+
 namespace LarCooperativa.Api.Domain;
 
 public interface IPessoaRepository
 {
-    Task<IReadOnlyList<Pessoa>> GetAllAsync(CancellationToken cancellationToken);
+    Task<Page<Pessoa>> GetPageAsync(int pagina, int tamanhoPagina, CancellationToken cancellationToken);
 
     Task<Pessoa?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 

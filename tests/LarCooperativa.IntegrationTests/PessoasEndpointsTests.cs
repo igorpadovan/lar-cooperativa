@@ -99,12 +99,20 @@ public class PessoasEndpointsTests(ApiFactory factory) : IAsyncLifetime
     {
         var pessoa = await CriarPessoaAsync();
 
-        var response = await _client.GetAsync("/api/pessoas");
+        var encontrada = false;
+        for (var pagina = 1; !encontrada; pagina++)
+        {
+            var resposta = await _client.GetFromJsonAsync<PagedResponse<PessoaResponse>>(
+                $"/api/pessoas?pagina={pagina}&tamanhoPagina=100");
+            Assert.NotNull(resposta);
+            encontrada = resposta.Itens.Any(p => p.Id == pessoa.Id);
+            if (pagina >= resposta.TotalPaginas)
+            {
+                break;
+            }
+        }
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var pessoas = await response.Content.ReadFromJsonAsync<List<PessoaResponse>>();
-        Assert.NotNull(pessoas);
-        Assert.Contains(pessoas, p => p.Id == pessoa.Id);
+        Assert.True(encontrada, "a pessoa criada deveria aparecer em alguma página da listagem");
     }
 
     [Fact]

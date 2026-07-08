@@ -9,11 +9,13 @@ namespace LarCooperativa.Api.Controllers;
 public class PessoasController(IPessoaService service) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType<IEnumerable<PessoaResponse>>(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PessoaResponse>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType<PagedResponse<PessoaResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<PagedResponse<PessoaResponse>>> GetAll(
+        [FromQuery] PaginationQuery paginacao, CancellationToken cancellationToken)
     {
-        var pessoas = await service.GetAllAsync(cancellationToken);
-        return Ok(pessoas.Select(PessoaResponse.FromDomain));
+        var pagina = await service.GetAllAsync(paginacao, cancellationToken);
+        return Ok(PagedResponse<PessoaResponse>.FromPage(pagina, PessoaResponse.FromDomain));
     }
 
     [HttpGet("{id:guid}")]
