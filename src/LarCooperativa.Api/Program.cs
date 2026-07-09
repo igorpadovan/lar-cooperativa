@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,26 @@ var app = builder.Build();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
+    // Instâncias concorrentes (réplicas em deploy, hosts paralelos da suíte de testes) não
+    // podem migrar/semear ao mesmo tempo; o advisory lock serializa este bloco. A sessão do
+    // lock usa o banco de manutenção "postgres" porque o banco da aplicação pode ainda não
+    // existir neste ponto — é o MigrateAsync que o cria.
+    const long chaveDoLockDeInicializacao = 20260709;
+    var conexaoDeManutencao = new NpgsqlConnectionStringBuilder(
+        app.Configuration.GetConnectionString("Default")
+            ?? throw new InvalidOperationException("Configuração 'ConnectionStrings:Default' ausente."))
+    {
+        Database = "postgres",
+        Pooling = false, // fechar a conexão encerra a sessão e libera o advisory lock
+    };
+    await using var conexaoDoLock = new NpgsqlConnection(conexaoDeManutencao.ConnectionString);
+    await conexaoDoLock.OpenAsync();
+    await using (var adquirirLock = new NpgsqlCommand("SELECT pg_advisory_lock(@chave)", conexaoDoLock))
+    {
+        adquirirLock.Parameters.AddWithValue("chave", chaveDoLockDeInicializacao);
+        await adquirirLock.ExecuteNonQueryAsync();
+    }
+
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
 
