@@ -1,0 +1,45 @@
+name: Testes
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: lar
+          POSTGRES_PASSWORD: lar
+          POSTGRES_DB: lar_cooperativa_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lar -d lar_cooperativa_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    # Mesma configuração do serviço "tests" do compose.yaml
+    env:
+      ConnectionStrings__Default: "Host=localhost;Port=5432;Database=lar_cooperativa_test;Username=lar;Password=lar"
+      Jwt__Key: chave-de-desenvolvimento-nao-usar-em-producao-0123456789
+      Auth__AdminUsuario: admin
+      Auth__AdminSenha: admin123
+      # Limites altos: a suíte compartilha uma instância da API; o throttling é testado
+      # em fábrica própria com limites baixos (RateLimitingTests)
+      RateLimiting__Api__PermitLimit: "100000"
+      RateLimiting__Login__PermitLimit: "100000"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Executar testes
+        run: dotnet test
